@@ -17,3 +17,9 @@ settings:
   sltpUsingPips: true
   RSIPeriod: 14
   finacc: "185402794597232926"
+
+logging:
+  level:
+    org:
+      zalando: TRACE
+
