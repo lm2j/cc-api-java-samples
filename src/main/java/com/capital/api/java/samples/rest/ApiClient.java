@@ -164,6 +164,14 @@ public class ApiClient extends AbstractApiClient {
         return response.getBody();
     }
 
+
+    public WatchlistsItem getWatchlistItem(ConversationContext conversationContext, String watchListId) {
+        HttpEntity<?> requestEntity = buildHttpEntity(conversationContext, null);
+        ResponseEntity<WatchlistsItem> response = restTemplate.exchange(getApiDomainURL().concat(API_V1_WATCHLISTS).concat("/" + watchListId), HttpMethod.GET, requestEntity, WatchlistsItem.class);
+        return response.getBody();
+    }
+
+
     //instrument prices
     public GetPricesResponse getPrices(ConversationContext conversationContext, String max, String pageSize, String epic, String from, String to, String resolution) {
         String uri = epic == null ? "" : "/".concat(epic);
