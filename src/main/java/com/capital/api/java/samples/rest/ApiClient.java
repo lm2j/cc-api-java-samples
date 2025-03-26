@@ -39,8 +39,8 @@ import com.capital.api.java.samples.rest.dto.session.GetSessionResponse;
 import com.capital.api.java.samples.rest.dto.time.ServerTime;
 import com.capital.api.java.samples.rest.dto.watchlists.CreateWatchlistRequest;
 import com.capital.api.java.samples.rest.dto.watchlists.CreateWatchlistResponse;
+import com.capital.api.java.samples.rest.dto.watchlists.GetWatchlistItemResponse;
 import com.capital.api.java.samples.rest.dto.watchlists.GetWatchlistsResponse;
-import com.capital.api.java.samples.rest.dto.watchlists.WatchlistsItem;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -49,84 +49,91 @@ import org.springframework.stereotype.Service;
 @Service
 public class ApiClient extends AbstractApiClient {
     // account
-    public GetAccountsResponse getAccounts(ConversationContext conversationContext)  {
+    public GetAccountsResponse getAccounts(ConversationContext conversationContext) {
         HttpEntity<?> requestEntity = buildHttpEntity(conversationContext, null);
         ResponseEntity<GetAccountsResponse> response = restTemplate.exchange(getApiDomainURL().concat(API_V1_ACCOUNTS), HttpMethod.GET, requestEntity, GetAccountsResponse.class);
         return response.getBody();
     }
 
-    public GetSessionResponse getSession(ConversationContext conversationContext)  {
+    public GetSessionResponse getSession(ConversationContext conversationContext) {
         HttpEntity<?> requestEntity = buildHttpEntity(conversationContext, null);
         ResponseEntity<GetSessionResponse> response = restTemplate.exchange(getApiDomainURL().concat(API_V1_SESSION), HttpMethod.GET, requestEntity, GetSessionResponse.class);
         return response.getBody();
     }
 
     // account preferences
-    public GetPreferencesResponse getPreferences(ConversationContext conversationContext)  {
+    public GetPreferencesResponse getPreferences(ConversationContext conversationContext) {
         HttpEntity<?> requestEntity = buildHttpEntity(conversationContext, null);
         ResponseEntity<GetPreferencesResponse> response = restTemplate.exchange(getApiDomainURL().concat(API_V1_ACCOUNTS_PREFERENCES), HttpMethod.GET, requestEntity, GetPreferencesResponse.class);
         return response.getBody();
     }
 
-    public UpdateActiveAccountResponse updateActiveAccount(ConversationContext conversationContext, UpdateActiveAccountRequest request)  {
+    public UpdateActiveAccountResponse updateActiveAccount(ConversationContext conversationContext, UpdateActiveAccountRequest request) {
         HttpEntity<?> requestEntity = buildHttpEntity(conversationContext, request);
         ResponseEntity<UpdateActiveAccountResponse> response = restTemplate.exchange(getApiDomainURL().concat(API_V1_SESSION), HttpMethod.PUT, requestEntity, UpdateActiveAccountResponse.class);
         return response.getBody();
     }
 
-    public UpdatePreferencesResponse updatePreferences(ConversationContext conversationContext, UpdatePreferencesRequest request)  {
+    public UpdatePreferencesResponse updatePreferences(ConversationContext conversationContext, UpdatePreferencesRequest request) {
         HttpEntity<?> requestEntity = buildHttpEntity(conversationContext, request);
         ResponseEntity<UpdatePreferencesResponse> response = restTemplate.exchange(getApiDomainURL().concat(API_V1_ACCOUNTS_PREFERENCES), HttpMethod.PUT, requestEntity, UpdatePreferencesResponse.class);
         return response.getBody();
     }
 
     // market
-    public GetMarketNavigationResponse getMarketNavigation(ConversationContext conversationContext)  {
+    public GetMarketNavigationResponse getMarketNavigation(ConversationContext conversationContext) {
         HttpEntity<?> requestEntity = buildHttpEntity(conversationContext, null);
         ResponseEntity<GetMarketNavigationResponse> response = restTemplate.exchange(getApiDomainURL().concat(API_V1_MARKET_NAVIGATION), HttpMethod.GET, requestEntity, GetMarketNavigationResponse.class);
         return response.getBody();
     }
 
-    public GetMarketNavigationNodeResponse getMarketNavigationIndicesNode(ConversationContext conversationContext, String nodeId)  {
+    public GetMarketNavigationNodeResponse getMarketNavigationIndicesNode(ConversationContext conversationContext, String nodeId) {
         HttpEntity<?> requestEntity = buildHttpEntity(conversationContext, null);
         ResponseEntity<GetMarketNavigationNodeResponse> response = restTemplate.exchange(getApiDomainURL().concat(API_V1_MARKET_NAVIGATION).concat("/").concat(nodeId), HttpMethod.GET, requestEntity, GetMarketNavigationNodeResponse.class);
         return response.getBody();
     }
 
-    public GetMarketDetailsListResponse getMarketDetailsList(ConversationContext conversationContext, String epics)  {
+    public GetMarketDetailsListResponse getMarketDetailsList(ConversationContext conversationContext, String epics) {
         HttpEntity<?> requestEntity = buildHttpEntity(conversationContext, null);
         String url = getApiDomainURL().concat(API_V1_MARKETS).concat("?epics=").concat(epics);
         ResponseEntity<GetMarketDetailsListResponse> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, GetMarketDetailsListResponse.class);
         return response.getBody();
     }
 
-    public GetMarketDetailsResponse getMarketDetails(ConversationContext conversationContext, String epic) throws Exception {
+    public GetMarketDetailsListResponse searchMarketDetailsList(ConversationContext conversationContext, String searchTerm) {
+        HttpEntity<?> requestEntity = buildHttpEntity(conversationContext, null);
+        String url = getApiDomainURL().concat(API_V1_MARKETS).concat("?searchTerm=").concat(searchTerm);
+        ResponseEntity<GetMarketDetailsListResponse> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, GetMarketDetailsListResponse.class);
+        return response.getBody();
+    }
+
+    public GetMarketDetailsResponse getMarketDetails(ConversationContext conversationContext, String epic) {
         HttpEntity<?> requestEntity = buildHttpEntity(conversationContext, null);
         ResponseEntity<GetMarketDetailsResponse> response = restTemplate.exchange(getApiDomainURL().concat(API_V1_MARKETS).concat("/").concat(epic), HttpMethod.GET, requestEntity, GetMarketDetailsResponse.class);
         return response.getBody();
     }
 
     // position
-    public CreatePositionResponse createPosition(ConversationContext conversationContext, CreatePositionRequest request)  {
+    public CreatePositionResponse createPosition(ConversationContext conversationContext, CreatePositionRequest request) {
         HttpEntity<?> requestEntity = buildHttpEntity(conversationContext, request);
         ResponseEntity<CreatePositionResponse> response = restTemplate.exchange(getApiDomainURL().concat(API_V1_POSITIONS), HttpMethod.POST, requestEntity, CreatePositionResponse.class);
         return response.getBody();
     }
 
-    public GetPositionsResponse getPositions(ConversationContext conversationContext)  {
+    public GetPositionsResponse getPositions(ConversationContext conversationContext) {
         HttpEntity<?> requestEntity = buildHttpEntity(conversationContext, null);
         ResponseEntity<GetPositionsResponse> response = restTemplate.exchange(getApiDomainURL().concat(API_V1_POSITIONS), HttpMethod.GET, requestEntity, GetPositionsResponse.class);
         return response.getBody();
     }
 
     // orders
-    public GetWorkingOrdersResponse getOrders(ConversationContext conversationContext)  {
+    public GetWorkingOrdersResponse getOrders(ConversationContext conversationContext) {
         HttpEntity<?> requestEntity = buildHttpEntity(conversationContext, null);
         ResponseEntity<GetWorkingOrdersResponse> response = restTemplate.exchange(getApiDomainURL().concat(API_V1_ORDERS), HttpMethod.GET, requestEntity, GetWorkingOrdersResponse.class);
         return response.getBody();
     }
 
-    public CreateWorkingOrderResponse createOrder(ConversationContext conversationContext, CreateWorkingOrderRequest request)  {
+    public CreateWorkingOrderResponse createOrder(ConversationContext conversationContext, CreateWorkingOrderRequest request) {
         HttpEntity<?> requestEntity = buildHttpEntity(conversationContext, request);
         ResponseEntity<CreateWorkingOrderResponse> response = restTemplate.exchange(getApiDomainURL().concat(API_V1_ORDERS), HttpMethod.POST, requestEntity, CreateWorkingOrderResponse.class);
         return response.getBody();
@@ -139,20 +146,20 @@ public class ApiClient extends AbstractApiClient {
     }
 
     // history
-    public GetTransactionHistoryResponse getTransactionHistory(ConversationContext conversationContext)  {
+    public GetTransactionHistoryResponse getTransactionHistory(ConversationContext conversationContext) {
         HttpEntity<?> requestEntity = buildHttpEntity(conversationContext, null);
         ResponseEntity<GetTransactionHistoryResponse> response = restTemplate.exchange(getApiDomainURL().concat(API_V1_HISTORY_TRANSACTIONS), HttpMethod.GET, requestEntity, GetTransactionHistoryResponse.class);
         return response.getBody();
     }
 
-    public GetActivityHistoryResponse getActivityHistory(ConversationContext conversationContext)  {
+    public GetActivityHistoryResponse getActivityHistory(ConversationContext conversationContext) {
         HttpEntity<?> requestEntity = buildHttpEntity(conversationContext, null);
         ResponseEntity<GetActivityHistoryResponse> response = restTemplate.exchange(getApiDomainURL().concat(API_V1_HISTORY_TRANSACTIONS), HttpMethod.GET, requestEntity, GetActivityHistoryResponse.class);
         return response.getBody();
     }
 
     // watchlists
-    public CreateWatchlistResponse createWatchlist(ConversationContext conversationContext, CreateWatchlistRequest createWatchlistRequest)  {
+    public CreateWatchlistResponse createWatchlist(ConversationContext conversationContext, CreateWatchlistRequest createWatchlistRequest) {
         HttpEntity<?> requestEntity = buildHttpEntity(conversationContext, createWatchlistRequest);
         ResponseEntity<CreateWatchlistResponse> response = restTemplate.exchange(getApiDomainURL().concat(API_V1_WATCHLISTS), HttpMethod.POST, requestEntity, CreateWatchlistResponse.class);
         return response.getBody();
@@ -165,9 +172,9 @@ public class ApiClient extends AbstractApiClient {
     }
 
 
-    public WatchlistsItem getWatchlistItem(ConversationContext conversationContext, String watchListId) {
-        HttpEntity<?> requestEntity = buildHttpEntity(conversationContext, null);
-        ResponseEntity<WatchlistsItem> response = restTemplate.exchange(getApiDomainURL().concat(API_V1_WATCHLISTS).concat("/" + watchListId), HttpMethod.GET, requestEntity, WatchlistsItem.class);
+    public GetWatchlistItemResponse getWatchlistItem(ConversationContext conversationContext, String watchListId) {
+        var requestEntity = buildHttpEntity(conversationContext, null);
+        var response = restTemplate.exchange(getApiDomainURL().concat(API_V1_WATCHLISTS).concat("/" + watchListId), HttpMethod.GET, requestEntity, GetWatchlistItemResponse.class);
         return response.getBody();
     }
 
@@ -185,7 +192,7 @@ public class ApiClient extends AbstractApiClient {
     }
 
     //client sentiment
-    public GetClientSentimentResponse getClientSentiment(ConversationContext conversationContext, String marketId)  {
+    public GetClientSentimentResponse getClientSentiment(ConversationContext conversationContext, String marketId) {
         String uri = marketId == null ? "" : "/".concat(marketId);
         HttpEntity<?> requestEntity = buildHttpEntity(conversationContext, null);
         ResponseEntity<GetClientSentimentResponse> response = restTemplate.exchange(getApiDomainURL().concat(API_V1_CLIENTSENTIMENT).concat(uri), HttpMethod.GET, requestEntity, GetClientSentimentResponse.class);
@@ -193,14 +200,14 @@ public class ApiClient extends AbstractApiClient {
     }
 
     // server time
-    public ServerTime getTime(ConversationContext conversationContext)  {
+    public ServerTime getTime(ConversationContext conversationContext) {
         HttpEntity<?> requestEntity = buildHttpEntity(conversationContext, null);
         ResponseEntity<ServerTime> response = restTemplate.exchange(getApiDomainURL().concat(API_V1_TIME), HttpMethod.GET, requestEntity, ServerTime.class);
         return response.getBody();
     }
 
     // logout
-    public void logout(ConversationContext conversationContext)  {
+    public void logout(ConversationContext conversationContext) {
         HttpEntity<?> requestEntity = buildHttpEntity(conversationContext, null);
         restTemplate.exchange(getApiDomainURL().concat(API_V1_SESSION), HttpMethod.DELETE, requestEntity, Void.class);
     }
