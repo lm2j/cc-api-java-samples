@@ -26,3 +26,6 @@ logging:
     org:
       zalando: TRACE
 
+logbook:
+  filter:
+    exclude: ".*"
