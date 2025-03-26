@@ -28,6 +28,11 @@ import com.capital.api.java.samples.rest.dto.time.ServerTime;
 import com.capital.api.java.samples.rest.dto.watchlists.WatchlistsItem;
 import com.capital.api.java.samples.rest.util.DtoGenerator;
 import com.capital.api.java.samples.ws.WsClient;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -46,22 +51,18 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class Application implements CommandLineRunner {
     private static final Logger logger = LoggerFactory.getLogger(Application.class);
+    private static final Gson prettyPrinter = new GsonBuilder().setPrettyPrinting().create();
 
     @Autowired
     private ApiClient apiClient;
-
     @Autowired
     private WsClient wsClient;
-
     @Autowired
     private SettingsConfig settingsConfig;
-
     @Autowired
     private CapitalUserConfig capitalUserConfig;
-
     @Autowired
     private AuthenticationApiClient authenticationService;
-
     private ConversationContext conversationContext = null;
 
     public static void main(String[] args) {
@@ -103,7 +104,7 @@ public class Application implements CommandLineRunner {
     }
 
     //    @Scheduled(fixedRate = 30000, initialDelay = 30000)
-    public void ping() throws Exception {
+    public void ping() throws IOException {
         apiClient.getTime(conversationContext);
         wsClient.ping();
     }
@@ -116,54 +117,54 @@ public class Application implements CommandLineRunner {
         return authenticationService.createSession(request, apiKey);
     }
 
-    private void printAccounts() throws Exception {
+    private void printAccounts() {
         GetAccountsResponse response = apiClient.getAccounts(conversationContext);
         List<AccountItem> accounts = response.getAccounts();
         logger.info("All accounts:");
         accounts.forEach(a -> logger.info("AccountId: " + a.getAccountId() + ", AccountName: " + a.getAccountName() + ", AccountType: " + a.getAccountType()));
     }
 
-    private void switchAccount(String accountId) throws Exception {
+    private void switchAccount(String accountId) {
         logger.info("Switch account");
         UpdateActiveAccountRequest request = new UpdateActiveAccountRequest(accountId);
         apiClient.updateActiveAccount(conversationContext, request);
     }
 
-    private void printSession() throws Exception {
+    private void printSession() {
         GetSessionResponse session = apiClient.getSession(conversationContext);
         logger.info("Active session: " + session.getAccountId() + ", clientId: " + session.getClientId());
     }
 
-    private void printPreferences() throws Exception {
+    private void printPreferences() {
         GetPreferencesResponse preferences = apiClient.getPreferences(conversationContext);
         logger.info("Preferences: " + preferences.toString());
     }
 
-    private void updatePreferences() throws Exception {
+    private void updatePreferences() {
         UpdatePreferencesRequest request = new UpdatePreferencesRequest();
         request.setLeverages(Map.of(LeverageGroup.SHARES, 1, LeverageGroup.CURRENCIES, 1));
         UpdatePreferencesResponse response = apiClient.updatePreferences(conversationContext, request);
         logger.info("Preferences updates: " + response.getStatus());
     }
 
-    private void printMarketNavigation() throws Exception {
+    private void printMarketNavigation() {
         GetMarketNavigationResponse response = apiClient.getMarketNavigation(conversationContext);
         logger.info("Market navigation: ");
         response.getNodes().forEach(a -> logger.info("{} -->{}", a.getId(), a.getName()));
     }
 
-    private void printMarketNavigationNode(String nodeId) throws Exception {
+    private void printMarketNavigationNode(String nodeId) {
         GetMarketNavigationNodeResponse response = apiClient.getMarketNavigationIndicesNode(conversationContext, nodeId);
         logger.info("Market navigation by node: " + response.getNodes());
     }
 
-    private void printMarketDetailsList(String epics) throws Exception {
+    private void printMarketDetailsList(String epics) {
         GetMarketDetailsListResponse response = apiClient.getMarketDetailsList(conversationContext, epics);
         logger.info("Markets details list: " + response);
     }
 
 
-    private void searchMarketDetailsList(String searchTerm) throws Exception {
+    private void searchMarketDetailsList(String searchTerm) {
         GetMarketDetailsListResponse response = apiClient.searchMarketDetailsList(conversationContext, searchTerm);
         logger.info("Markets details list: " + response);
     }
@@ -183,20 +184,20 @@ public class Application implements CommandLineRunner {
     private void printSingleWatchListItem(String id) {
         apiClient.getWatchlistItem(conversationContext, id)
                 .getMarkets()
-                .forEach(i -> logger.info("{}", i));
+                .forEach(i -> logger.info("{}", prettyPrinter.toJson(i)));
 
 
     }
 
 
-    private CreatePositionResponse createPosition() throws Exception {
+    private CreatePositionResponse createPosition() {
         CreatePositionRequest request = DtoGenerator.createPosition();
         CreatePositionResponse response = apiClient.createPosition(conversationContext, request);
         logger.info("Position created, deal reference: " + response.getDealReference());
         return response;
     }
 
-    private CreatePositionResponse createPosition(String epic, BigDecimal qty, Direction direction) throws Exception {
+    private CreatePositionResponse createPosition(String epic, BigDecimal qty, Direction direction) {
         CreatePositionRequest request = CreatePositionRequest.builder().build();
         request.setEpic(epic);
         request.setSize(qty);
@@ -206,12 +207,12 @@ public class Application implements CommandLineRunner {
         return response;
     }
 
-    private void printPositions() throws Exception {
+    private void printPositions() {
         GetPositionsResponse response = apiClient.getPositions(conversationContext);
         logger.info("Positions: " + response.getPositions());
     }
 
-    private void printOrders() throws Exception {
+    private void printOrders() {
         GetWorkingOrdersResponse response = apiClient.getOrders(conversationContext);
         logger.info("Orders: " + response.getWorkingOrders());
     }
@@ -221,12 +222,12 @@ public class Application implements CommandLineRunner {
         logger.info("Deal confirmation: " + response);
     }
 
-    private void printPrices(String marketId) throws Exception {
+    private void printPrices(String marketId) {
         GetPricesResponse response = apiClient.getPrices(conversationContext, "", "", "", "", "", "");
         logger.info("Prices: " + response.getPrices());
     }
 
-    private void printServerTime() throws Exception {
+    private void printServerTime() {
         ServerTime serverTime = apiClient.getTime(conversationContext);
         Date serverDate = new Date(serverTime.getServerTime());
         logger.info("Server time: " + serverDate);
