@@ -2,3 +2,4 @@ gitigno.idea
 /target/
 /build/
 /api-java-samples.iml
+/.idea/**
