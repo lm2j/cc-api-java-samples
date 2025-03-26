@@ -10,6 +10,7 @@ import com.capital.api.java.samples.ws.dto.market.MarketDataSubscribe;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
@@ -30,6 +31,7 @@ import java.util.UUID;
 import java.util.concurrent.*;
 
 @Service
+@Slf4j
 public class WsClient {
 
     protected static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
@@ -37,7 +39,6 @@ public class WsClient {
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .configure(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL, true);
 
-    private static final Logger logger = LoggerFactory.getLogger(WsClient.class);
 
     private ConversationContext conversationContext;
 
@@ -61,7 +62,7 @@ public class WsClient {
     private Session connect() throws IOException  {
         ClientUpgradeRequest request = new ClientUpgradeRequest();
         request.setTimeout(10_000, TimeUnit.MILLISECONDS);
-        logger.info("WS URL: {}", wsUrl);
+        log.info("WS URL: {}", wsUrl);
         try {
             return client.connect(new ClientSocket(), wsUrl, request).get(15_000, TimeUnit.MILLISECONDS);
         } catch (TimeoutException | InterruptedException | ExecutionException e) {
