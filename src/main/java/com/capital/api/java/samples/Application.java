@@ -28,8 +28,6 @@ import com.capital.api.java.samples.rest.dto.time.ServerTime;
 import com.capital.api.java.samples.rest.dto.watchlists.WatchlistsItem;
 import com.capital.api.java.samples.rest.util.DtoGenerator;
 import com.capital.api.java.samples.ws.WsClient;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.IOException;
@@ -37,6 +35,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +45,7 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 
 @SpringBootApplication
 @EnableScheduling
@@ -98,15 +98,21 @@ public class Application implements CommandLineRunner {
 
         printServerTime();
         wsClient.connect(conversationContext);
+        wsClient.subscribeMarketData(List.of("DE40","US100"), quote -> logger.info("{}", prettyPrinter.toJson(quote)));
+
 //
 //		Core core = new Core(apiClient, wsClient, conversationContext, settingsConfig);
 //		core.rsi(settingsConfig.getEpics(), settingsConfig.getResolutions(), settingsConfig.getRSIPeriod());
     }
 
-    //    @Scheduled(fixedRate = 30000, initialDelay = 30000)
+    @Scheduled(fixedRate = 3, initialDelay = 5, timeUnit = TimeUnit.SECONDS)
     public void ping() throws IOException {
-        apiClient.getTime(conversationContext);
-        wsClient.ping();
+        try {
+            apiClient.getTime(conversationContext);
+            wsClient.ping();
+        } catch (IOException e) {
+            logger.error("Error pinging API: {}", e.getMessage());
+        }
     }
 
     private ConversationContext authenticate(String identifier, String password, boolean encryptedPassword, String apiKey) {
